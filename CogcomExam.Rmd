@@ -1,0 +1,103 @@
+---
+title: "Cogcom exam"
+author: "Kasper Michelsen"
+date: "12/16/2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+pacman::p_load(tidyverse, pastecs, WRS2)
+```
+
+```{r}
+files <- list.files(path = "data filter",     #PUT THE NAME OF YOUR FOLDER WITH DATA in the quotes, it also might need '/' in the end, experiment with it :)
+                    pattern = ".csv",  #everything that contains '.csv' in its name will be listed
+                    full.names = T)    #makes it include directory path, so instead of 'logfile_1.csv' it will be 'data/logfile_1.csv')
+
+#read all the files into a tibble (a fancy df)
+data <- lapply(files, read_csv) %>%  # apply read_csv() to every element in files list and send the resulting tibbles to the next line
+  plyr::rbind.fill()  #bind rows from resulting tibbles together so you have one dataset with all of your data
+```
+
+```{r}
+
+data <- subset(data, participant != "60")
+
+
+data$trials.thisRepN <- NULL
+data$X33 <- NULL
+data$frameRate <- NULL
+data$psychopyVersion <- NULL
+data$date <- NULL
+data$expName <- NULL
+data$text_2.stopped <- NULL
+data$key_resp_2.stopped <- NULL
+data$text_4.stopped <- NULL
+data$text_5.stopped <- NULL
+data$key_resp_3.keys <- NULL
+data$sound_1.stopped <- NULL
+data$trials.thisTrialN <- NULL
+data$text_2.started <- NULL
+data$text_4.started <- NULL
+data$text_5.started <- NULL
+data$sound_1.started <- NULL
+data$key_resp_2.started <- NULL
+data$session <- NULL
+data$trials.thisN <- NULL
+data$trials.thisIndex <- NULL
+data$key_resp_2.rt <- NULL
+data$key_resp_3.rt <- NULL
+
+names(data)[1]<-paste("Word 1")
+names(data)[2]<-paste("Word 2")
+names(data)[7]<-paste("Response")
+
+data$Wave <- as.factor(data$Wave)
+
+data$Response <- as.factor(data$Response)
+
+data$Chord <- as.factor(data$Chord)
+
+data$Octave <- as.factor(data$Octave)
+
+data$participant <- as.factor(data$participant)
+
+data$gender <- as.factor(data$gender)
+
+data$`Cogsci-student` <- as.factor(data$`Cogsci-student`)
+
+str(data)
+
+
+
+
+```
+
+```{r}
+m2 <- glm(Response ~ Wave + Octave + Chord, data, family = binomial)
+summary(m2)
+```
+
+## R Markdown
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+```{r cars}
+summary(cars)
+```
+
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r pressure, echo=FALSE}
+plot(pressure)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
